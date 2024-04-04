@@ -112,7 +112,7 @@ sap.ui.define(["sap/ui/core/Control",
 				}
 		
 				loadingTask.promise.then(function(pdf) {
-					me.pageNumber = 1;
+					me.pageNumber = me.getCurrentPage() * 1;
 					me.scale = 1;
 					me.pdf = pdf;
 					me._toolbar.getModel("pdf").setProperty("/pages",me.pdf.numPages);
