@@ -11,7 +11,7 @@ sap.ui.define(["sap/ui/core/Control",
 				"height": "string",
 				"currentPage": "string",
 				"totalPages": "string",
-				"starPage": "string",
+				"startPage": "string",
 				"endPage": "string"
 			},
 			"events": {}
