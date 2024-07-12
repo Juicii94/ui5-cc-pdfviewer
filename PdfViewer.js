@@ -75,7 +75,8 @@ sap.ui.define(["sap/ui/core/Control",
 			this.displayPDF(this.pageNumber);
 		},
 		nextPage: async function() {
-			if (this.pageNumber >= this.getEndPage() * 1) {
+			const endPage = this.getEndPage() ? this.getEndPage() * 1 : this.pdf.numPages;
+			if (this.pageNumber >= endPage) {
 				return;
 			}
 			this.pageNumber++;
@@ -83,7 +84,8 @@ sap.ui.define(["sap/ui/core/Control",
 			this._toolbar.rerender()
 		},
 		prevPage: async function() {
-			if (this.pageNumber <= this.getStartPage() * 1) {
+			var startPage = this.getStartPage() ? this.getStartPage() * 1 : 1;
+			if (this.pageNumber <= startPage) {
 				return;
 			}
 			this.pageNumber--;
@@ -114,10 +116,10 @@ sap.ui.define(["sap/ui/core/Control",
 				}
 		
 				loadingTask.promise.then(function(pdf) {
-					me.pageNumber = me.getCurrentPage() * 1;
+					me.pageNumber = me.getCurrentPage() ? me.getCurrentPage() * 1 : 1;
 					me.scale = 1;
 					me.pdf = pdf;
-					me._toolbar.getModel("pdf").setProperty("/pages", me.getEndPage() * 1);
+					me._toolbar.getModel("pdf").setProperty("/pages", me.getEndPage() ? me.getEndPage() * 1 : me.pdf.numPages);
 					me.displayPDF(me.pageNumber);
 					me._toolbar.rerender()
 				}, function(reason) {
