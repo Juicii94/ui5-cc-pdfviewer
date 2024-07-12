@@ -99,6 +99,10 @@ sap.ui.define(["sap/ui/core/Control",
 				this.old = this.getPdfSource();
 				this.count = this.count + 1;
 				this.firstTime = false;
+
+				if (!this.worker) {
+					this.worker = new pdfjsLib.PDFWorker("test2");
+				}
 		
 				pdfjsLib.GlobalWorkerOptions.workerSrc = sap.ui.require.toUrl("pdfjs-dist") + "/pdf.worker.js";
 		
@@ -107,11 +111,15 @@ sap.ui.define(["sap/ui/core/Control",
 				var isUrl = /^(ftp|http|https):\/\/[^ "]+$/.test(this.getPdfSource().trim());
 		
 				if (isUrl) {
-					loadingTask = pdfjsLib.getDocument(this.getPdfSource().trim());
+					loadingTask = pdfjsLib.getDocument({
+						url: this.getPdfSource().trim(),
+						worker: this.worker,
+					});
 				} else {
 					var pdfData = atob(this.getPdfSource().split(",")[1]);
 					loadingTask = pdfjsLib.getDocument({
-						data: pdfData
+						data: pdfData,
+						worker: this.worker,
 					});
 				}
 		
