@@ -12,7 +12,12 @@ sap.ui.define(["sap/ui/core/Control",
 				"currentPage": "string",
 				"totalPages": "string",
 				"startPage": "string",
-				"endPage": "string"
+				"endPage": "string",
+				"navPage": "string",
+				"navEnabled": "boolean",
+				"pageDisplayEnabled": "boolean",
+				"zoomEnabled": "boolean",
+				"zoomScale": "string"
 			},
 			"events": {}
 		},
@@ -28,9 +33,14 @@ sap.ui.define(["sap/ui/core/Control",
 				ControlUtils.getButton(false, 'sys-next-page', this.nextPage.bind(this)),
 				ControlUtils.getSpacer()
 			]);
-			this._toolbar.setModel(new JSONModel({currentpage:0,pages:0}),"pdf");
+			this._toolbar.setModel(new JSONModel({currentpage:0,pages:0,zoomScale: 1}),"pdf");
 		},
 		renderer: function(oRm, oControl) {
+			oControl._toolbar.getContent()[1].setVisible(oControl.getZoomEnabled());
+			oControl._toolbar.getContent()[2].setVisible(oControl.getZoomEnabled());
+			oControl._toolbar.getContent()[3].setVisible(oControl.getPageDisplayEnabled());
+			oControl._toolbar.getContent()[4].setVisible(oControl.getNavEnabled());
+			oControl._toolbar.getContent()[5].setVisible(oControl.getNavEnabled());
 			oRm.write("<div ");
 			oRm.writeControlData(oControl); // writes the Control ID and enables event handling - important!
 			oRm.write(">");
@@ -68,10 +78,14 @@ sap.ui.define(["sap/ui/core/Control",
 		},
 		zoomin: function() {
 			this.scale = this.scale + 0.25;
+			this.setZoomScale(this.scale);
+			//this.setHeight(this.adjustHeight(this.getHeight(), 25, "add"))
 			this.displayPDF(this.pageNumber);
 		},
 		zoomout: function() {
 			this.scale = this.scale - 0.25;
+			this.setZoomScale(this.scale);
+			//this.setHeight(this.adjustHeight(this.getHeight(), 25, "subtract"))
 			this.displayPDF(this.pageNumber);
 		},
 		nextPage: async function() {
@@ -103,13 +117,13 @@ sap.ui.define(["sap/ui/core/Control",
 				if (!this.worker) {
 					this.worker = new pdfjsLib.PDFWorker("test2");
 				}
-		
+
 				pdfjsLib.GlobalWorkerOptions.workerSrc = sap.ui.require.toUrl("pdfjs-dist") + "/pdf.worker.js";
-		
+
 				var loadingTask;
-		
+
 				var isUrl = /^(ftp|http|https):\/\/[^ "]+$/.test(this.getPdfSource().trim());
-		
+
 				if (isUrl) {
 					loadingTask = pdfjsLib.getDocument({
 						url: this.getPdfSource().trim(),
@@ -122,10 +136,13 @@ sap.ui.define(["sap/ui/core/Control",
 						worker: this.worker,
 					});
 				}
-		
+
 				loadingTask.promise.then(function(pdf) {
-					me.pageNumber = me.getCurrentPage() ? me.getCurrentPage() * 1 : 1;
-					me.scale = 1;
+					me.startPage = me.getStartPage() ? me.getStartPage() * 1 : 1;
+					me.endPage = me.getEndPage() ? me.getEndPage() * 1 : me.pdf.numPages * 1; 
+					me.navPage = me.getNavPage() ? me.getNavPage() : 0;
+					me.pageNumber = (me.navPage * 1) !== 0 ? me.navPage * 1 : me.getCurrentPage() ? me.getCurrentPage() * 1 : 1;
+					me.scale = me.getZoomScale() * 1 || 1;
 					me.pdf = pdf;
 					me._toolbar.getModel("pdf").setProperty("/pages", me.getEndPage() ? me.getEndPage() * 1 : me.pdf.numPages);
 					me.displayPDF(me.pageNumber);
@@ -135,8 +152,13 @@ sap.ui.define(["sap/ui/core/Control",
 				});
 			}
 		},
-		
-		
+		// adjustHeight(height, percentage, operation) {
+		// 	const numericValue = parseInt(height.replace('px', ''), 10);
+		// 	const change = numericValue * (percentage / 100);
+		// 	const newHeight = operation === 'add' ? numericValue + change : numericValue - change;
+		// 	return `${newHeight}px`;
+		// },
+
 		displayPDF: async function(num) {
 			var me = this;
 			if (this.pdf) {

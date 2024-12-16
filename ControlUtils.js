@@ -20,7 +20,7 @@ sap.ui.define([
 				text: getText ? getText() : "",
 				press: getAction ? getAction : "",
 				icon: icon ? "sap-icon://" + icon : "",
-				visible: isVisible ? isVisible() : true,
+				visible: isVisible ? isVisible : false,
 				tooltip: tooltip ? tooltip() : ""
 					// ,
 					// type: "Emphasized"
@@ -37,9 +37,10 @@ sap.ui.define([
 			}
 			return lbl;
 		},
-		getText: function(getTextValue) {
+		getText: function(getTextValue, isVisible) {
 			return new Text({
-				text: getTextValue()
+				text: getTextValue(),
+				visible: isVisible ? isVisible : false
 			});
 		},
 		getToolbar: function(content) {
