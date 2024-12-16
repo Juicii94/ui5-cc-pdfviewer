@@ -46,7 +46,7 @@ sap.ui.define(["sap/ui/core/Control",
 			oRm.write(">");
 			oRm.renderControl(oControl._toolbar);
 
-			oRm.write("<div id='" + `${control.getId()}-scrollCont'"`);
+			oRm.write("<div id='" + `${oControl.getId()}-scrollCont'"`);
 			oRm.addClass("sapMScrollCont");
 			oRm.addClass("sapMScrollContVH");
 			oRm.writeClasses();
