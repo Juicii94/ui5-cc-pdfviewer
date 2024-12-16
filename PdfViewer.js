@@ -46,12 +46,15 @@ sap.ui.define(["sap/ui/core/Control",
 			oRm.write(">");
 			oRm.renderControl(oControl._toolbar);
 
-			oRm.write("<div");
+			oRm.write("<div id='" + `${control.getId()}-scrollCont'"`);
 			oRm.addClass("sapMScrollCont");
 			oRm.addClass("sapMScrollContVH");
 			oRm.writeClasses();
 			oRm.addStyle("height", oControl.getHeight());
 			oRm.addStyle("overflow", "auto");
+			oRm.addStyle("display", "flex");
+			oRm.addStyle("align-items", "start");
+			oRm.addStyle("justify-content", "center");
 			oRm.writeStyles();
 			oRm.write(">");
 			oRm.write("<canvas id='" + oControl.getId() + "-canvas'>");
@@ -64,6 +67,10 @@ sap.ui.define(["sap/ui/core/Control",
 				sap.ui.core.Control.prototype.onAfterRendering.apply(this, arguments);
 			}
 			// this.setPdfSource(this.getPdfSource());
+			const container = window.document.getElementById(
+				this.getId() + "-scrollCont",
+			);
+			this._containerWidth = container.offsetWidth;
 			if (!this.isRendering) {
 				this.updatePDF();
 			}
@@ -77,12 +84,14 @@ sap.ui.define(["sap/ui/core/Control",
 			this.updatePDF();
 		},
 		zoomin: function() {
+			if (window.document.getElementById(this.getId() + "-canvas").offsetWidth >= this._containerWidth) return;
 			this.scale = this.scale + 0.25;
 			this.setZoomScale(this.scale);
 			//this.setHeight(this.adjustHeight(this.getHeight(), 25, "add"))
 			this.displayPDF(this.pageNumber);
 		},
 		zoomout: function() {
+			this.scale = this.scale - 0.25 >= 1 ? this.scale - 0.25 : 1;
 			this.scale = this.scale - 0.25;
 			this.setZoomScale(this.scale);
 			//this.setHeight(this.adjustHeight(this.getHeight(), 25, "subtract"))
