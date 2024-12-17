@@ -92,7 +92,6 @@ sap.ui.define(["sap/ui/core/Control",
 		},
 		zoomout: function() {
 			this.scale = this.scale - 0.25 >= 1 ? this.scale - 0.25 : 1;
-			this.scale = this.scale - 0.25;
 			this.setZoomScale(this.scale);
 			//this.setHeight(this.adjustHeight(this.getHeight(), 25, "subtract"))
 			this.displayPDF(this.pageNumber);
@@ -150,7 +149,8 @@ sap.ui.define(["sap/ui/core/Control",
 					me.startPage = me.getStartPage() ? me.getStartPage() * 1 : 1;
 					me.endPage = me.getEndPage() ? me.getEndPage() * 1 : me.pdf.numPages * 1; 
 					me.navPage = me.getNavPage() ? me.getNavPage() : 0;
-					me.pageNumber = (me.navPage * 1) !== 0 ? me.navPage * 1 : me.getCurrentPage() ? me.getCurrentPage() * 1 : 1;
+					me.pageNumber = (me.navPage * 1) !== 0 ? me.navPage * 1 : me.getCurrentPage() ? me.getCurrentPage() * 1 : this.pdf.numPages;
+					me.currentPage = me.pageNumber;
 					me.scale = me.getZoomScale() * 1 || 1;
 					me.pdf = pdf;
 					me._toolbar.getModel("pdf").setProperty("/pages", me.getEndPage() ? me.getEndPage() * 1 : me.pdf.numPages);
